@@ -1,4 +1,5 @@
 const express = require('express')
+const uuid = require('uuid').v4
 const router = express.Router();
 const fs = require('node:fs')
 const db = require('../db')()
@@ -27,6 +28,7 @@ router.post('/add', async function (req, res) {
   console.log('req:', payload)
   const doc = {
     ...payload,
+    id: uuid(),
     timestamp: new Date().getTime()
   }
   const result = await db.insertOne(doc, 'list')

@@ -7,7 +7,8 @@ function db () {
 
   const connect = async function(dbName = 'recording', collectionName = 'list') {
     // const uri = "mongodb://dachao:dachao@cluster0-shard-00-00.veb9b.mongodb.net:27017,cluster0-shard-00-01.veb9b.mongodb.net:27017,cluster0-shard-00-02.veb9b.mongodb.net:27017/?ssl=true&replicaSet=atlas-ee4eye-shard-0&authSource=admin&retryWrites=true&w=majority"
-    const uri = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.6.0"
+    // const uri = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.6.0"
+    const uri = "mongodb://mongo-local:27017/recording?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.6.0"
     _client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
     await _client.connect()
     console.log('connect mongo successfully...')

@@ -1,9 +1,10 @@
-FROM node:19-alpine3.15
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
-# WORKDIR /home/node/app
-# COPY package*.json ./
-# USER node
-# RUN npm install
-# COPY --chown=node:node . .
-# EXPOSE 3001 3001
-# CMD [ "node", "./bin/www" ]
+FROM node:lts-alpine
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+RUN npm install --production --silent && mv node_modules ../
+COPY . .
+EXPOSE 3001
+RUN chown -R node /usr/src/app
+USER node
+CMD ["npm", "start"]
