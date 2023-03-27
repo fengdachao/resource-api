@@ -95,10 +95,10 @@ router.post('/user/validate', async function(req, res) {
     const user = await db.findOne({ name }, 'user')
     const validate = user && user.password === password
     res.cookie('isAuth', validate, {
-      domain: 'localhost:3000',
+      domain: '*',
       expires: new Date(Date.now() + 24 * 3600000)
     })
-    .set('Access-Control-Allow-Origin', 'http://localhost:3000')
+    .set('Access-Control-Allow-Origin', '*')
     .set('Access-Control-Allow-Credentials', true)
     .json({ validate: validate ? 'success' : 'fail', role: user.role })
   } else res.json({ validate: 'fail' })
