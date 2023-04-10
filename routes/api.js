@@ -40,15 +40,16 @@ router.delete('/remove', async function (req, res) {
   const id = req.body.id
   const path = req.body.path
   const result = await db.deleteOne(id, 'list')
-  console.log('recv path:', path)
+  res.json({ result })
+  // console.log('recv path:', path)
   // delete file
-  fs.rm(path, (err) => {
-    if (err) {
-      console.log('error:', err)
-      return res.status(500).json({ message: 'remove file fail,' + path})
-    }
-    res.json({ result })
-  })
+  // fs.rm(path, (err) => {
+  //   if (err) {
+  //     console.log('error:', err)
+  //     return res.status(500).json({ message: 'remove file fail,' + path})
+  //   }
+  //   res.json({ result })
+  // })
 })
 
 router.get('/config/list', async function (req, res) {
@@ -98,8 +99,8 @@ router.post('/user/validate', async function(req, res) {
       domain: '*',
       expires: new Date(Date.now() + 24 * 3600000)
     })
-    .set('Access-Control-Allow-Origin', '*')
-    .set('Access-Control-Allow-Credentials', true)
+    // .set('Access-Control-Allow-Origin', '*')
+    // .set('Access-Control-Allow-Credentials', true)
     .json({ validate: validate ? 'success' : 'fail', role: user.role })
   } else res.json({ validate: 'fail' })
 })
