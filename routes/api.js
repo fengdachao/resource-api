@@ -80,6 +80,16 @@ router.delete('/config/remove', async function(req, res) {
   res.json(result)
 })
 
+router.get('/config/param', async function (req, res) {
+  const result = await db.find({}, 'param')
+  res.json(result[0])
+})
+
+router.put('/config/param/update', async function (req, res) {
+  console.log('update param:', req.body)
+  const result = await db.updateOne({ id: req.body.id }, req.body, 'param')
+})
+
 router.get('/user/list', async function(req, res) {
   const result = await db.find({}, 'user')
   res.json(result)
