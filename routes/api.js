@@ -1,14 +1,18 @@
 const express = require('express')
+const archiver = require('archiver')
+const { ObjectId } = require('mongodb')
 const uuid = require('uuid').v4
 const router = express.Router();
+const http = require('node:http')
 const fs = require('node:fs')
 const db = require('../db')()
 
 router.get('/list', async function (req, res) {
-  const { query: { name, place, startDate, endDate } } = req
+  const { query: { name, place, cameraId, startDate, endDate } } = req
   const params = {
     // name,
     // place,
+    // cameraId,
     date: {$gte: Number(startDate), $lte: Number(endDate)},
   }
   if (name) params.name = name
@@ -17,6 +21,7 @@ router.get('/list', async function (req, res) {
       $eq: place,
     }
   }
+  if (cameraId) params.cameraId = cameraId
   console.log('params:', params)
   const data = await db.find(params, 'list')
   console.log('data:', data)
@@ -50,6 +55,37 @@ router.delete('/remove', async function (req, res) {
   //   }
   //   res.json({ result })
   // })
+})
+
+router.delete('/list/remove', async function(req, res) {
+  console.log('list remove:', req.body)
+  const deleteParam = { _id: { $in: req.body.map((id) => ObjectId(id))}}
+  const result = await db.remove(deleteParam, 'list')
+  return res.json({ result })
+})
+
+router.post('/list/batch-download', async function(req, res) {
+  const files = req.body
+  let fileNameThunk = ''
+  const batchRequest = http.request({
+    hostname: 'localhost',
+    port: 6666,
+    method: 'POST',
+    path: '/',
+  }, (batchResponse) => {
+    // console.log('res from batch server:', res)
+    batchResponse.on('data', (chunk) => {
+      console.log(`receive data from batch server:${chunk}`)
+      fileNameThunk += chunk
+    })
+    batchResponse.on('end', () => {
+      res.end(fileNameThunk)
+      console.log('batch server is end')
+    })
+  })
+  batchRequest.write(JSON.stringify(files))
+  batchRequest.end()
+  // res.end()
 })
 
 router.get('/config/list', async function (req, res) {
@@ -96,7 +132,8 @@ router.get('/user/list', async function(req, res) {
 })
 
 router.get('/user/one', async function(req, res) {
-  const result = await db.findOne({ name: req.query.name }, 'user')
+  console.log('find one user:', ObjectId(req.query.id))
+  const result = await db.findOne({ _id: ObjectId(req.query.id) }, 'user')
   res.json(result)
 })
 
@@ -116,11 +153,17 @@ router.post('/user/validate', async function(req, res) {
 })
 
 router.post('/user/add', async function(req, res) {
-  const doc = {
-    ...req.body,
-    timestamp: new Date().getTime(),
-  }
   const result = await db.insertOne(req.body, 'user')
+  res.json(result)
+})
+
+router.put('/user/update', async function(req, res) {
+  const result = await db.updateOne({ _id: ObjectId(req.body.id) }, req.body, 'user')
+  res.json(result)
+})
+
+router.delete('/user/delete', async function(req, res) {
+  const result = await db.deleteByParam({ _id: ObjectId(req.query.id) }, 'user')
   res.json(result)
 })
 

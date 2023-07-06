@@ -1,4 +1,4 @@
-var { MongoClient, ServerApiVersion } = require('mongodb');
+var { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 function db () {
   let _client = null
@@ -40,6 +40,16 @@ function db () {
     return await _db.collection(collectionName).deleteOne({ id })
   }
 
+  const deleteByParam = async function(param, collectionName) {
+    if (_db === null) await connect()
+    return await _db.collection(collectionName).deleteOne(param)
+  }
+
+  const remove = async function(query, collectionName) {
+    if (_db === null) await connect()
+    return await _db.collection(collectionName).deleteMany(query)
+  }
+
   const updateOne = async function(filter, doc, collectionName) {
     if (_db === null) await connect()
     console.log('filter:', filter)
@@ -54,6 +64,8 @@ function db () {
     insertOne,
     updateOne,
     deleteOne,
+    deleteByParam,
+    remove,
   }
 }
 
