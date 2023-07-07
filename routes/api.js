@@ -68,7 +68,7 @@ router.post('/list/batch-download', async function(req, res) {
   const files = req.body
   let fileNameThunk = ''
   const batchRequest = http.request({
-    hostname: 'localhost',
+    hostname: 'mongo-local',
     port: 6666,
     method: 'POST',
     path: '/',
